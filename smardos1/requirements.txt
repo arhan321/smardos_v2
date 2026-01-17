@@ -1,0 +1,8 @@
+python-dotenv
+requests
+Flask
+gunicorn
+pandas
+scikit-learn
+# scikit-learn
+openpyxl

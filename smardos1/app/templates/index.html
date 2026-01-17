@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat dengan SMARDOS - Smart Asisten Dosen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>"
+    />
+    <style>
+      body {
+        font-family: "Nunito", sans-serif;
+        background-color: #ffffff;
+      }
+
+      /* Glass Card disesuaikan untuk latar terang */
+      .glass-card {
+        background: rgba(255, 255, 255, 1);
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      .nav-link {
+        position: relative;
+        text-decoration: none;
+      }
+
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        transform: scaleX(0);
+        height: 2px;
+        bottom: -4px;
+        left: 0;
+        background-color: #2563eb;
+        transform-origin: bottom right;
+        transition: transform 0.25s ease-out;
+      }
+
+      .nav-link:hover::after {
+        transform: scaleX(1);
+        transform-origin: bottom left;
+      }
+    </style>
+  </head>
+  <body class="text-slate-800">
+    <div class="flex flex-col min-h-screen">
+      <header
+        class="bg-white/80 backdrop-blur-md shadow-sm z-20 sticky top-0 border-b border-slate-100"
+      >
+        <nav
+          class="container mx-auto px-6 py-4 flex justify-between items-center"
+        >
+          <div class="flex items-center space-x-10">
+            <a
+              href="{{ url_for('main.index') }}"
+              class="flex-shrink-0 flex items-center space-x-3"
+            >
+              <div
+                class="w-10 h-10 rounded-full border-2 border-blue-600 bg-blue-50 flex items-center justify-center text-xl"
+              >
+                🎓
+              </div>
+              <span class="text-2xl font-extrabold text-blue-900 tracking-tight"
+                >SMARDOS</span
+              >
+            </a>
+            <div class="hidden md:flex items-center space-x-8">
+              <a
+                href="#fitur"
+                class="text-slate-600 hover:text-blue-600 nav-link transition-colors font-medium"
+                >Fitur Utama</a
+              >
+              <a
+                href="#topik"
+                class="text-slate-600 hover:text-blue-600 nav-link transition-colors font-medium"
+                >Materi Keahlian</a
+              >
+              <a
+                href="#"
+                class="text-slate-600 hover:text-blue-600 nav-link transition-colors font-medium"
+                >Tentang Kami</a
+              >
+            </div>
+          </div>
+          <div class="hidden md:block">
+            <button
+              id="start-chat-header-btn"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-full transition-all duration-300 shadow-md transform hover:scale-105"
+            >
+              Mulai Konsultasi
+            </button>
+          </div>
+          <div class="md:hidden">
+            <button
+              id="mobile-menu-button"
+              class="text-slate-800 focus:outline-none"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16m-7 6h7"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </nav>
+        <div
+          id="mobile-menu"
+          class="hidden md:hidden bg-white border-b border-slate-100"
+        >
+          <a
+            href="#fitur"
+            class="block py-3 px-6 text-slate-600 hover:bg-blue-50"
+            >Fitur Utama</a
+          >
+          <a
+            href="#topik"
+            class="block py-3 px-6 text-slate-600 hover:bg-blue-50"
+            >Materi Keahlian</a
+          >
+          <a href="#" class="block py-3 px-6 text-slate-600 hover:bg-blue-50"
+            >Tentang Kami</a
+          >
+          <div class="px-6 py-4">
+            <button
+              id="start-chat-mobile-btn"
+              class="w-full bg-blue-600 text-white font-bold py-2.5 px-5 rounded-full"
+            >
+              Mulai Konsultasi
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main class="flex-grow">
+        <section
+          class="bg-slate-50 container mx-auto px-6 py-24 text-center flex flex-col items-center rounded-b-[3rem]"
+        >
+          <div
+            class="w-32 h-32 mb-6 rounded-full border-4 border-white bg-blue-600 shadow-2xl shadow-blue-200 flex items-center justify-center text-6xl transform hover:rotate-12 transition-transform duration-300"
+          >
+            🎓
+          </div>
+          <h1
+            class="text-4xl md:text-6xl font-black text-slate-900 leading-tight"
+          >
+            <span class="text-blue-600">Materi Akademik</span> Jadi Lebih Paham
+            & <br />Sepraktis itu Konsultasi!
+          </h1>
+          <p class="text-lg md:text-xl text-slate-600 mt-6 mb-10 max-w-2xl">
+            Butuh bantuan riset, tugas kuliah, atau pendalaman materi?
+            Konsultasikan apa saja pada
+            <span class="font-bold text-blue-700">SMARDOS</span>, asisten dosen
+            cerdasmu yang siap siaga memberikan solusi 24 jam!
+          </p>
+          <button
+            id="start-chat-hero-btn"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-4 px-12 rounded-full text-xl shadow-xl shadow-blue-200 transform hover:scale-105 transition-transform duration-300"
+          >
+            🚀 Tanya SMARDOS Sekarang!
+          </button>
+        </section>
+
+        <section id="fitur" class="py-24 bg-white">
+          <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+              <h2 class="text-3xl md:text-4xl font-bold text-slate-900">
+                Kenapa Harus Menggunakan SMARDOS?
+              </h2>
+              <p class="text-slate-500 mt-4 text-lg">
+                Asisten akademik digital yang dirancang untuk efisiensi studi
+                Anda.
+              </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+              <div
+                class="glass-card rounded-3xl p-10 text-center hover:border-blue-300 transition-all duration-300"
+              >
+                <div class="text-5xl mb-6">⚡</div>
+                <h3 class="text-2xl font-bold mb-4 text-slate-900">
+                  Respons Cepat
+                </h3>
+                <p class="text-slate-600 leading-relaxed">
+                  Dapatkan jawaban dan referensi akademik secara instan tanpa
+                  harus menunggu jam kerja.
+                </p>
+              </div>
+              <div
+                class="glass-card rounded-3xl p-10 text-center hover:border-blue-300 transition-all duration-300"
+              >
+                <div class="text-5xl mb-6">📖</div>
+                <h3 class="text-2xl font-bold mb-4 text-slate-900">
+                  Wawasan Luas
+                </h3>
+                <p class="text-slate-600 leading-relaxed">
+                  Membantu analisis berbagai materi perkuliahan, jurnal, hingga
+                  metodologi penelitian.
+                </p>
+              </div>
+              <div
+                class="glass-card rounded-3xl p-10 text-center hover:border-blue-300 transition-all duration-300"
+              >
+                <div class="text-5xl mb-6">🎯</div>
+                <h3 class="text-2xl font-bold mb-4 text-slate-900">
+                  Bimbingan Personal
+                </h3>
+                <p class="text-slate-600 leading-relaxed">
+                  Penjelasan disusun secara sistematis dan mudah dipahami untuk
+                  membantu tugas perkuliahanmu.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="topik" class="py-24 bg-slate-50">
+          <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+              <h2 class="text-3xl md:text-4xl font-bold text-slate-900">
+                Eksplorasi Bidang Akademik
+              </h2>
+              <p class="text-slate-500 mt-4">
+                Pilih topik yang ingin Anda diskusikan hari ini
+              </p>
+            </div>
+            <div
+              class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 text-center"
+            >
+              <div
+                class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 transition-all cursor-pointer"
+              >
+                <div class="text-2xl mb-2">🔬</div>
+                <span class="font-bold text-slate-700 text-sm"
+                  >Metode Penelitian</span
+                >
+              </div>
+              <div
+                class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 transition-all cursor-pointer"
+              >
+                <div class="text-2xl mb-2">📝</div>
+                <span class="font-bold text-slate-700 text-sm"
+                  >Penulisan Ilmiah</span
+                >
+              </div>
+              <div
+                class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 transition-all cursor-pointer"
+              >
+                <div class="text-2xl mb-2">📊</div>
+                <span class="font-bold text-slate-700 text-sm"
+                  >Data Mining</span
+                >
+              </div>
+              <div
+                class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 transition-all cursor-pointer"
+              >
+                <div class="text-2xl mb-2">🛠️</div>
+                <span class="font-bold text-slate-700 text-sm"
+                  >Pemrograman</span
+                >
+              </div>
+              <div
+                class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 transition-all cursor-pointer"
+              >
+                <div class="text-2xl mb-2">🧠</div>
+                <span class="font-bold text-slate-700 text-sm"
+                  >Machine Learning</span
+                >
+              </div>
+              <div
+                class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 transition-all cursor-pointer"
+              >
+                <div class="text-2xl mb-2">🖥️</div>
+                <span class="font-bold text-slate-700 text-sm"
+                  >Jaringan Komputer</span
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <footer class="bg-slate-900 py-12">
+          <div class="container mx-auto text-center">
+            <p class="font-bold text-xl text-white mb-3">
+              SMARDOS: Smart Asisten Dosen
+            </p>
+            <p class="text-slate-400 text-sm max-w-md mx-auto">
+              Solusi cerdas bimbingan akademik 24/7 untuk mahasiwa esa unggul.
+            </p>
+          </div>
+        </footer>
+      </main>
+    </div>
+
+    <script>
+      const startChatHeaderBtn = document.getElementById(
+        "start-chat-header-btn"
+      );
+      const startChatHeroBtn = document.getElementById("start-chat-hero-btn");
+      const startChatMobileBtn = document.getElementById(
+        "start-chat-mobile-btn"
+      );
+      const mobileMenuButton = document.getElementById("mobile-menu-button");
+      const mobileMenu = document.getElementById("mobile-menu");
+
+      function goToChat() {
+        window.location.href = "{{ url_for('main.chat') }}";
+      }
+      startChatHeaderBtn.addEventListener("click", goToChat);
+      startChatHeroBtn.addEventListener("click", goToChat);
+      startChatMobileBtn.addEventListener("click", goToChat);
+      mobileMenuButton.addEventListener("click", () => {
+        mobileMenu.classList.toggle("hidden");
+      });
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          if (!mobileMenu.classList.contains("hidden")) {
+            mobileMenu.classList.add("hidden");
+          }
+          document.querySelector(this.getAttribute("href")).scrollIntoView({
+            behavior: "smooth",
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

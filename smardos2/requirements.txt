@@ -1,0 +1,11 @@
+python-dotenv
+requests
+Flask
+gunicorn
+pandas
+scikit-learn
+openpyxl
+streamlit
+langchain
+langchain-ollama
+ollama
