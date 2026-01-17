@@ -13,35 +13,27 @@ st.set_page_config(
 )
 
 # ======================================================
-# 2. ADVANCED CUSTOM CSS (FIX KONTRAS TEKS)
+# 2. ADVANCED CUSTOM CSS (FIX KONTRAS + LOADING BUBBLE)
 # ======================================================
 st.markdown(
     """
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap');
 
-    /* Base */
-    .stApp { background-color: #f8fafc; }
     html, body, [class*="st-"] { font-family: 'Nunito', sans-serif; }
 
-    /* Sidebar */
-    [data-testid="stSidebar"] {
-        background-color: #ffffff !important;
-        border-right: 1px solid #e2e8f0;
-    }
+    /* Background app */
+    .stApp { background-color: #0b1220; }
 
-    /* Buttons */
-    .stButton>button {
-        width: 100%;
-        border-radius: 10px;
-        font-weight: 600;
-        text-align: left;
-        padding: 10px 15px;
+    /* Sidebar */
+    [data-testid="stSidebar"]{
+        background-color: #0f172a !important;
+        border-right: 1px solid rgba(148,163,184,0.18);
     }
 
     /* Header */
     .main-header {
-        background: white;
+        background: #0f172a;
         padding: 1rem 2rem;
         border-bottom: 2px solid #2563eb;
         display: flex;
@@ -51,50 +43,93 @@ st.markdown(
         border-radius: 14px;
     }
 
-    /* ===== FIX: Chat bubble contrast on Dark/Light mode =====
-       Streamlit chat message container: [data-testid="stChatMessage"]
-       Role markers are classes: .stChatMessage (newer) / data attributes (varies).
-       We'll style by 'assistant' and 'user' via attribute selector on avatar container parent.
-    */
-
-    /* Make chat message look consistent */
-    [data-testid="stChatMessage"] {
-        border-radius: 14px;
-        padding: 1.0rem 1.1rem;
-        margin-bottom: 0.8rem;
-        border: 1px solid rgba(148,163,184,0.35);
+    /* Chat message container */
+    [data-testid="stChatMessage"]{
+        border-radius: 14px !important;
+        padding: 0.2rem !important;
+        margin-bottom: 0.9rem !important;
+        border: none !important;
+        background: transparent !important;
     }
 
-    /* Force readable text inside chat */
-    [data-testid="stChatMessage"] * {
-        color: #0f172a !important; /* slate-900 */
-    }
-
-    /* Assistant bubble background */
-    [data-testid="stChatMessage"][data-testid*="assistant"],
-    [data-testid="stChatMessage"]:has([aria-label="assistant avatar"]) {
+    /* Chat message content box (stabil di Streamlit) */
+    [data-testid="stChatMessageContent"]{
         background: #ffffff !important;
+        border-radius: 14px !important;
+        padding: 1rem 1.1rem !important;
+        border: 1px solid rgba(148,163,184,0.25) !important;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
     }
 
-    /* User bubble background */
-    [data-testid="stChatMessage"][data-testid*="user"],
-    [data-testid="stChatMessage"]:has([aria-label="user avatar"]) {
-        background: #eff6ff !important; /* blue-50 */
-        border-color: rgba(37, 99, 235, 0.25) !important;
+    /* Force readable text */
+    [data-testid="stChatMessageContent"] p,
+    [data-testid="stChatMessageContent"] li,
+    [data-testid="stChatMessageContent"] span,
+    [data-testid="stChatMessageContent"] div,
+    [data-testid="stChatMessageContent"] strong,
+    [data-testid="stChatMessageContent"] em,
+    [data-testid="stChatMessageContent"] code{
+        color: #0f172a !important;
+        font-size: 15px;
+        line-height: 1.65;
     }
 
-    /* If browser/theme dark mode makes page dark, keep bubbles readable */
-    @media (prefers-color-scheme: dark) {
-        .stApp { background-color: #0b1220; } /* dark */
-        [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid rgba(148,163,184,0.15); }
-        [data-testid="stChatMessage"] { border-color: rgba(148,163,184,0.18); }
-        [data-testid="stChatMessage"] * { color: #0f172a !important; } /* keep text dark because bubbles are light */
-    }
-
-    /* Optional: make markdown links visible */
-    [data-testid="stChatMessage"] a {
+    /* Links */
+    [data-testid="stChatMessageContent"] a{
         color: #2563eb !important;
         text-decoration: underline;
+        font-weight: 600;
+    }
+
+    /* Code blocks */
+    [data-testid="stChatMessageContent"] pre{
+        background: #0b1220 !important;
+        border-radius: 10px !important;
+        padding: 12px !important;
+        border: 1px solid rgba(148,163,184,0.25) !important;
+        overflow-x: auto;
+    }
+    [data-testid="stChatMessageContent"] pre *{
+        color: #e2e8f0 !important;
+        font-size: 13px !important;
+    }
+
+    /* Chat input */
+    [data-testid="stChatInput"] textarea{
+        background: #111827 !important;
+        color: #e5e7eb !important;
+        border: 1px solid rgba(148,163,184,0.25) !important;
+    }
+
+    /* ===== Loading bubble (assistant) ===== */
+    .smardos-loading {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 14px 16px;
+      border: 1px solid rgba(148,163,184,0.25);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+      color: #0f172a;
+      font-size: 15px;
+      line-height: 1.6;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .smardos-dots span{
+      display:inline-block;
+      width:7px;height:7px;
+      margin:0 2px;
+      border-radius:50%;
+      background:#2563eb;
+      animation: smardosBounce 1.2s infinite ease-in-out;
+    }
+    .smardos-dots span:nth-child(2){ animation-delay: .15s; }
+    .smardos-dots span:nth-child(3){ animation-delay: .3s; }
+
+    @keyframes smardosBounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: .35; }
+      40% { transform: translateY(-4px); opacity: 1; }
     }
     </style>
     """,
@@ -111,6 +146,7 @@ OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://host.docker.internal:1143
 # ======================================================
 @st.cache_data(ttl=300)
 def get_available_models(base_url: str):
+    """GET {base_url}/api/tags"""
     try:
         r = requests.get(f"{base_url}/api/tags", timeout=5)
         r.raise_for_status()
@@ -121,6 +157,7 @@ def get_available_models(base_url: str):
 
 
 def generate_smardos_response(user_input: str, model_name: str, base_url: str) -> str:
+    """Generate response via langchain_ollama to Ollama HTTP endpoint."""
     try:
         from langchain_ollama import OllamaLLM
     except ModuleNotFoundError:
@@ -130,8 +167,7 @@ def generate_smardos_response(user_input: str, model_name: str, base_url: str) -
         model=model_name,
         temperature=0.3,
         base_url=base_url,
-        # Biar lebih cepat dan tidak kebablasan panjang
-        num_predict=350
+        num_predict=350,  # biar lebih cepat & nggak kepanjangan
     )
 
     system_instructions = (
@@ -140,9 +176,10 @@ def generate_smardos_response(user_input: str, model_name: str, base_url: str) -
         "1. Hanya jawab pertanyaan yang berkaitan dengan materi perkuliahan, teori akademik, atau metode penelitian.\n"
         "2. Jika pertanyaan TIDAK berkaitan dengan perkuliahan/pendidikan, tolak dengan sopan.\n"
         "3. Setiap jawaban WAJIB menyertakan referensi ilmiah di bagian akhir.\n"
-        "4. Format referensi harus mencantumkan Link URL (Google Scholar/DOAJ/dll).\n"
+        "4. Format referensi harus mencantumkan Link URL (Google Scholar/DOAJ/portal jurnal).\n"
         "5. Gunakan Bahasa Indonesia yang formal dan edukatif.\n"
-        "6. Jawaban maksimal 6 paragraf, ringkas dan jelas."
+        "6. Jawaban maksimal 6 paragraf, ringkas dan jelas.\n"
+        "7. Jika memberikan kode/sintaks, WAJIB gunakan blok ```bahasa ... ``` agar rapi."
     )
 
     full_prompt = f"### Instruction:\n{system_instructions}\n\n### User Question:\n{user_input}\n\n### Response:"
@@ -150,6 +187,7 @@ def generate_smardos_response(user_input: str, model_name: str, base_url: str) -
 
 
 def check_ollama_connection(base_url: str):
+    """Cek koneksi ke Ollama dan tampilkan debug info."""
     try:
         r = requests.get(f"{base_url}/api/tags", timeout=5)
         st.write("✅ Status:", r.status_code)
@@ -163,7 +201,7 @@ def check_ollama_connection(base_url: str):
 # ======================================================
 with st.sidebar:
     st.markdown(
-        "<h1 style='color:#1e3a8a;font-size:24px;font-weight:800;'>🎓 SMARDOS</h1>",
+        "<h1 style='color:#e2e8f0;font-size:24px;font-weight:800;'>🎓 SMARDOS</h1>",
         unsafe_allow_html=True
     )
     st.caption("v2.5 - Your Smart Academic Partner")
@@ -205,7 +243,7 @@ st.markdown(
     <div class="main-header">
         <div style="display:flex;align-items:center;gap:10px;">
             <span style="font-size:24px;">💬</span>
-            <h3 style="margin:0;color:#1e3a8a;">Konsultasi Akademik</h3>
+            <h3 style="margin:0;color:#e2e8f0;">Konsultasi Akademik</h3>
         </div>
         <div style="background:#eff6ff;padding:5px 15px;border-radius:20px;
                     color:#2563eb;font-weight:bold;font-size:12px;">
@@ -242,100 +280,34 @@ if selected_model:
             st.markdown(prompt)
 
         with st.chat_message("assistant", avatar="🎓"):
-            with st.spinner("Sedang memproses"):
-                response = generate_smardos_response(prompt, selected_model, OLLAMA_BASE_URL)
-                st.markdown(response)
-                st.session_state.messages.append({"role": "assistant", "content": response})
+            placeholder = st.empty()
+
+            # Bubble loading konsisten dengan UI
+            placeholder.markdown(
+                """
+                <div class="smardos-loading">
+                    <div class="smardos-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <div><b>SMARDOS</b> sedang menyiapkan jawaban…</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+            # Generate jawaban
+            response = generate_smardos_response(prompt, selected_model, OLLAMA_BASE_URL)
+
+            # Replace loading dengan jawaban
+            placeholder.empty()
+            st.markdown(response)
+            st.session_state.messages.append({"role": "assistant", "content": response})
 else:
     st.info("Pilih model di sidebar untuk memulai.")
 
 st.markdown(
-    """
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap');
-
-    html, body, [class*="st-"] { font-family: 'Nunito', sans-serif; }
-
-    /* Background app */
-    .stApp { background-color: #0b1220; }  /* biar dark mode konsisten */
-
-    /* Sidebar */
-    [data-testid="stSidebar"]{
-        background-color: #0f172a !important;
-        border-right: 1px solid rgba(148,163,184,0.18);
-    }
-
-    /* Header bar looks */
-    .main-header {
-        background: #0f172a;
-        padding: 1rem 2rem;
-        border-bottom: 2px solid #2563eb;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        border-radius: 14px;
-    }
-
-    /* ====== FIX UTAMA: Chat bubble + teks ====== */
-    /* Outer chat container */
-    [data-testid="stChatMessage"]{
-        border-radius: 14px !important;
-        padding: 0.2rem !important;
-        margin-bottom: 0.9rem !important;
-        border: none !important;
-        background: transparent !important;
-    }
-
-    /* Content box inside message (INI yang paling stabil) */
-    [data-testid="stChatMessageContent"]{
-        background: #ffffff !important;
-        border-radius: 14px !important;
-        padding: 1rem 1.1rem !important;
-        border: 1px solid rgba(148,163,184,0.25) !important;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-    }
-
-    /* Force text readable */
-    [data-testid="stChatMessageContent"] p,
-    [data-testid="stChatMessageContent"] li,
-    [data-testid="stChatMessageContent"] span,
-    [data-testid="stChatMessageContent"] div,
-    [data-testid="stChatMessageContent"] strong,
-    [data-testid="stChatMessageContent"] em,
-    [data-testid="stChatMessageContent"] code{
-        color: #0f172a !important;
-        font-size: 15px;
-        line-height: 1.65;
-    }
-
-    /* Links visible */
-    [data-testid="stChatMessageContent"] a{
-        color: #2563eb !important;
-        text-decoration: underline;
-        font-weight: 600;
-    }
-
-    /* Code blocks readable */
-    [data-testid="stChatMessageContent"] pre{
-        background: #0b1220 !important;
-        border-radius: 10px !important;
-        padding: 12px !important;
-        border: 1px solid rgba(148,163,184,0.25) !important;
-        overflow-x: auto;
-    }
-    [data-testid="stChatMessageContent"] pre *{
-        color: #e2e8f0 !important;
-        font-size: 13px !important;
-    }
-
-    /* Optional: make chat input clean */
-    [data-testid="stChatInput"] textarea{
-        background: #111827 !important;
-        color: #e5e7eb !important;
-        border: 1px solid rgba(148,163,184,0.25) !important;
-    }
-    </style>
-    """,
+    "<div style='text-align:center;color:#94a3b8;font-size:12px;margin-top:50px;'>"
+    "SMARDOS Local Intelligence"
+    "</div>",
     unsafe_allow_html=True
 )
