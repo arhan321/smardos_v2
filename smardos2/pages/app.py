@@ -13,21 +13,24 @@ st.set_page_config(
 )
 
 # ======================================================
-# 2. ADVANCED CUSTOM CSS
+# 2. ADVANCED CUSTOM CSS (FIX KONTRAS TEKS)
 # ======================================================
 st.markdown(
     """
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap');
 
+    /* Base */
     .stApp { background-color: #f8fafc; }
     html, body, [class*="st-"] { font-family: 'Nunito', sans-serif; }
 
+    /* Sidebar */
     [data-testid="stSidebar"] {
         background-color: #ffffff !important;
         border-right: 1px solid #e2e8f0;
     }
 
+    /* Buttons */
     .stButton>button {
         width: 100%;
         border-radius: 10px;
@@ -36,12 +39,7 @@ st.markdown(
         padding: 10px 15px;
     }
 
-    [data-testid="stChatMessage"] {
-        border-radius: 15px;
-        padding: 1.2rem;
-        margin-bottom: 0.8rem;
-    }
-
+    /* Header */
     .main-header {
         background: white;
         padding: 1rem 2rem;
@@ -50,6 +48,53 @@ st.markdown(
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
+        border-radius: 14px;
+    }
+
+    /* ===== FIX: Chat bubble contrast on Dark/Light mode =====
+       Streamlit chat message container: [data-testid="stChatMessage"]
+       Role markers are classes: .stChatMessage (newer) / data attributes (varies).
+       We'll style by 'assistant' and 'user' via attribute selector on avatar container parent.
+    */
+
+    /* Make chat message look consistent */
+    [data-testid="stChatMessage"] {
+        border-radius: 14px;
+        padding: 1.0rem 1.1rem;
+        margin-bottom: 0.8rem;
+        border: 1px solid rgba(148,163,184,0.35);
+    }
+
+    /* Force readable text inside chat */
+    [data-testid="stChatMessage"] * {
+        color: #0f172a !important; /* slate-900 */
+    }
+
+    /* Assistant bubble background */
+    [data-testid="stChatMessage"][data-testid*="assistant"],
+    [data-testid="stChatMessage"]:has([aria-label="assistant avatar"]) {
+        background: #ffffff !important;
+    }
+
+    /* User bubble background */
+    [data-testid="stChatMessage"][data-testid*="user"],
+    [data-testid="stChatMessage"]:has([aria-label="user avatar"]) {
+        background: #eff6ff !important; /* blue-50 */
+        border-color: rgba(37, 99, 235, 0.25) !important;
+    }
+
+    /* If browser/theme dark mode makes page dark, keep bubbles readable */
+    @media (prefers-color-scheme: dark) {
+        .stApp { background-color: #0b1220; } /* dark */
+        [data-testid="stSidebar"] { background-color: #0f172a !important; border-right: 1px solid rgba(148,163,184,0.15); }
+        [data-testid="stChatMessage"] { border-color: rgba(148,163,184,0.18); }
+        [data-testid="stChatMessage"] * { color: #0f172a !important; } /* keep text dark because bubbles are light */
+    }
+
+    /* Optional: make markdown links visible */
+    [data-testid="stChatMessage"] a {
+        color: #2563eb !important;
+        text-decoration: underline;
     }
     </style>
     """,
@@ -59,8 +104,6 @@ st.markdown(
 # ======================================================
 # 3. KONFIG OLLAMA
 # ======================================================
-# Default aman untuk Docker (dengan extra_hosts host.docker.internal:host-gateway)
-# Bisa dioverride lewat docker-compose environment: OLLAMA_BASE_URL
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://host.docker.internal:11434").rstrip("/")
 
 # ======================================================
@@ -68,10 +111,6 @@ OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://host.docker.internal:1143
 # ======================================================
 @st.cache_data(ttl=300)
 def get_available_models(base_url: str):
-    """
-    Ambil daftar model dari Ollama HTTP API:
-    GET {base_url}/api/tags
-    """
     try:
         r = requests.get(f"{base_url}/api/tags", timeout=5)
         r.raise_for_status()
@@ -82,9 +121,6 @@ def get_available_models(base_url: str):
 
 
 def generate_smardos_response(user_input: str, model_name: str, base_url: str) -> str:
-    """
-    Generate response menggunakan langchain_ollama (langsung ke HTTP endpoint Ollama).
-    """
     try:
         from langchain_ollama import OllamaLLM
     except ModuleNotFoundError:
@@ -93,19 +129,20 @@ def generate_smardos_response(user_input: str, model_name: str, base_url: str) -
     llm = OllamaLLM(
         model=model_name,
         temperature=0.3,
-        base_url=base_url
+        base_url=base_url,
+        # Biar lebih cepat dan tidak kebablasan panjang
+        num_predict=350
     )
 
-    # Guardrails / instruksi sistem
     system_instructions = (
         "Kamu adalah SMARDOS (Smart Asisten Dosen), asisten akademik khusus perguruan tinggi.\n"
         "TUGAS UTAMA:\n"
-        "1. Hanya jawab pertanyaan yang berkaitan dengan materi perkuliahan, teori akademik, atau metode penelitian, dan referensi jurnal atau artikel.\n"
-        "2. Jika pertanyaan TIDAK berkaitan dengan materi perkuliahan atau pendidikan (misal: pertanyaan random, hiburan, atau hal aneh), "
-        "tolak dengan sopan dan katakan bahwa kamu hanya fokus pada bantuan mata kuliah.\n"
-        "3. Setiap jawaban WAJIB menyertakan referensi jurnal ilmiah yang valid di bagian akhir jawaban.\n"
-        "4. Format referensi harus mencantumkan Link URL (misal ke Google Scholar, DOAJ, atau portal jurnal lainnya).\n"
-        "5. Gunakan Bahasa Indonesia yang formal dan edukatif."
+        "1. Hanya jawab pertanyaan yang berkaitan dengan materi perkuliahan, teori akademik, atau metode penelitian.\n"
+        "2. Jika pertanyaan TIDAK berkaitan dengan perkuliahan/pendidikan, tolak dengan sopan.\n"
+        "3. Setiap jawaban WAJIB menyertakan referensi ilmiah di bagian akhir.\n"
+        "4. Format referensi harus mencantumkan Link URL (Google Scholar/DOAJ/dll).\n"
+        "5. Gunakan Bahasa Indonesia yang formal dan edukatif.\n"
+        "6. Jawaban maksimal 6 paragraf, ringkas dan jelas."
     )
 
     full_prompt = f"### Instruction:\n{system_instructions}\n\n### User Question:\n{user_input}\n\n### Response:"
@@ -113,9 +150,6 @@ def generate_smardos_response(user_input: str, model_name: str, base_url: str) -
 
 
 def check_ollama_connection(base_url: str):
-    """
-    Cek koneksi ke Ollama dan tampilkan debug info.
-    """
     try:
         r = requests.get(f"{base_url}/api/tags", timeout=5)
         st.write("✅ Status:", r.status_code)
@@ -123,13 +157,6 @@ def check_ollama_connection(base_url: str):
         st.json(r.json())
     except Exception as e:
         st.error(f"❌ Gagal konek ke Ollama: {e}")
-        st.info(
-            "Checklist cepat:\n"
-            "1) Pastikan Ollama jalan di HOST: `ollama serve`\n"
-            "2) Pastikan bisa diakses: `curl http://<HOST>:11434/api/tags`\n"
-            "3) Kalau pakai Docker: pastikan OLLAMA_HOST di host bind 0.0.0.0\n"
-            "   contoh: `export OLLAMA_HOST=0.0.0.0:11434` lalu `ollama serve`"
-        )
 
 # ======================================================
 # 5. SIDEBAR
@@ -159,7 +186,7 @@ with st.sidebar:
         st.success(f"Model aktif: **{selected_model}**")
     else:
         selected_model = None
-        st.error("Model Ollama tidak ditemukan. Pastikan Ollama server berjalan di host dan dapat diakses dari container.")
+        st.warning("Ollama terhubung, tapi belum ada model. Jalankan `ollama pull ...` di host dulu.")
 
     if st.button("🔍 Cek Koneksi Ollama"):
         check_ollama_connection(OLLAMA_BASE_URL)
@@ -220,7 +247,7 @@ if selected_model:
                 st.markdown(response)
                 st.session_state.messages.append({"role": "assistant", "content": response})
 else:
-    st.warning("Jalankan Ollama dan pilih model untuk memulai.")
+    st.info("Pilih model di sidebar untuk memulai.")
 
 st.markdown(
     "<div style='text-align:center;color:#94a3b8;font-size:12px;margin-top:50px;'>"
