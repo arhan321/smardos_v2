@@ -250,8 +250,92 @@ else:
     st.info("Pilih model di sidebar untuk memulai.")
 
 st.markdown(
-    "<div style='text-align:center;color:#94a3b8;font-size:12px;margin-top:50px;'>"
-    "SMARDOS Local Intelligence"
-    "</div>",
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap');
+
+    html, body, [class*="st-"] { font-family: 'Nunito', sans-serif; }
+
+    /* Background app */
+    .stApp { background-color: #0b1220; }  /* biar dark mode konsisten */
+
+    /* Sidebar */
+    [data-testid="stSidebar"]{
+        background-color: #0f172a !important;
+        border-right: 1px solid rgba(148,163,184,0.18);
+    }
+
+    /* Header bar looks */
+    .main-header {
+        background: #0f172a;
+        padding: 1rem 2rem;
+        border-bottom: 2px solid #2563eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-radius: 14px;
+    }
+
+    /* ====== FIX UTAMA: Chat bubble + teks ====== */
+    /* Outer chat container */
+    [data-testid="stChatMessage"]{
+        border-radius: 14px !important;
+        padding: 0.2rem !important;
+        margin-bottom: 0.9rem !important;
+        border: none !important;
+        background: transparent !important;
+    }
+
+    /* Content box inside message (INI yang paling stabil) */
+    [data-testid="stChatMessageContent"]{
+        background: #ffffff !important;
+        border-radius: 14px !important;
+        padding: 1rem 1.1rem !important;
+        border: 1px solid rgba(148,163,184,0.25) !important;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+
+    /* Force text readable */
+    [data-testid="stChatMessageContent"] p,
+    [data-testid="stChatMessageContent"] li,
+    [data-testid="stChatMessageContent"] span,
+    [data-testid="stChatMessageContent"] div,
+    [data-testid="stChatMessageContent"] strong,
+    [data-testid="stChatMessageContent"] em,
+    [data-testid="stChatMessageContent"] code{
+        color: #0f172a !important;
+        font-size: 15px;
+        line-height: 1.65;
+    }
+
+    /* Links visible */
+    [data-testid="stChatMessageContent"] a{
+        color: #2563eb !important;
+        text-decoration: underline;
+        font-weight: 600;
+    }
+
+    /* Code blocks readable */
+    [data-testid="stChatMessageContent"] pre{
+        background: #0b1220 !important;
+        border-radius: 10px !important;
+        padding: 12px !important;
+        border: 1px solid rgba(148,163,184,0.25) !important;
+        overflow-x: auto;
+    }
+    [data-testid="stChatMessageContent"] pre *{
+        color: #e2e8f0 !important;
+        font-size: 13px !important;
+    }
+
+    /* Optional: make chat input clean */
+    [data-testid="stChatInput"] textarea{
+        background: #111827 !important;
+        color: #e5e7eb !important;
+        border: 1px solid rgba(148,163,184,0.25) !important;
+    }
+    </style>
+    """,
     unsafe_allow_html=True
 )
