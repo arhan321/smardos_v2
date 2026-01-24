@@ -9,3 +9,5 @@ streamlit
 langchain
 langchain-ollama
 ollama
+streamlit-mic-recorder
+PyPDF2
